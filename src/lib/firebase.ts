@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Ces valeurs devront être remplacées par vos propres clés Firebase
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -12,13 +11,10 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID
 };
 
-// Initialiser l'application Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialiser Firestore
 export const db = getFirestore(app);
 
-// Initialiser Auth
 export const auth = getAuth(app);
 
 export default app; 

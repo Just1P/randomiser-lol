@@ -31,9 +31,7 @@ export default function RoomsPage() {
 
     try {
       const code = await createRoom(ownerName, playerCount);
-      // Stocker le nom pour l'utiliser dans la room
       localStorage.setItem("username", ownerName);
-      // Rediriger vers la room
       router.push(`/rooms/${code}`);
     } catch (error: unknown) {
       console.error("Erreur lors de la création de la room:", error);
@@ -65,7 +63,6 @@ export default function RoomsPage() {
         return;
       }
 
-      // Demander le nom si pas encore défini
       if (!localStorage.getItem("username")) {
         const username = prompt("Entrez votre nom pour rejoindre la room") || "";
         if (!username.trim()) {
@@ -76,7 +73,6 @@ export default function RoomsPage() {
         localStorage.setItem("username", username);
       }
 
-      // Rediriger vers la room
       router.push(`/rooms/${roomCode.toUpperCase()}`);
     } catch (error: unknown) {
       console.error("Erreur lors de la connexion à la room:", error);
@@ -95,13 +91,10 @@ export default function RoomsPage() {
     setError("");
     
     try {
-      // Vérifier si la collection "rooms" existe déjà
       const roomsCollection = collection(db, "rooms");
-      // Utiliser la variable snapshot pour éviter l'avertissement
       const snapshot = await getDocs(roomsCollection);
       console.log(`Collection rooms contient ${snapshot.size} documents`);
       
-      // Créer un document test
       const testDoc = await addDoc(collection(db, "tests"), {
         message: "Test de connexion Firebase",
         timestamp: Timestamp.now()

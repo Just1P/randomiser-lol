@@ -13,7 +13,6 @@ import { META_CHAMPIONS_BY_ROLE } from "@/lib/api";
 import { FirebaseError } from "firebase/app";
 
 export default function RoomPage() {
-  // Utiliser useParams pour récupérer le code de la room
   const params = useParams();
   const roomCode = params?.roomCode as string;
   
@@ -25,6 +24,7 @@ export default function RoomPage() {
   const [username, setUsername] = useState("");
   const [generatingTeam, setGeneratingTeam] = useState(false);
   const [joined, setJoined] = useState(false);
+  const [copied, setCopied] = useState(false);
   
   useEffect(() => {
     if (!roomCode) {
@@ -32,7 +32,6 @@ export default function RoomPage() {
       return;
     }
     
-    // Vérifier si l'utilisateur a un nom
     const storedUsername = localStorage.getItem("username");
     if (!storedUsername) {
       router.push("/rooms");
@@ -41,7 +40,6 @@ export default function RoomPage() {
     
     setUsername(storedUsername);
     
-    // S'abonner aux mises à jour de la room
     const unsubscribe = subscribeToRoom(roomCode, (roomData) => {
       setRoom(roomData);
       setLoading(false);
@@ -52,7 +50,6 @@ export default function RoomPage() {
     };
   }, [roomCode, router]);
   
-  // Ajouter le joueur à la room quand il rejoint
   useEffect(() => {
     const joinRoom = async () => {
       if (room && username && !joined) {
@@ -81,7 +78,6 @@ export default function RoomPage() {
       return;
     }
     
-    // Seul l'hôte peut générer l'équipe
     if (room.owner !== username) {
       setError("Seul l'hôte de la room peut générer l'équipe");
       return;
@@ -106,7 +102,6 @@ export default function RoomPage() {
   };
   
   const handleToggleChampions = async (include: boolean) => {
-    // Seul l'hôte peut changer les options
     if (room && room.owner !== username) {
       setError("Seul l'hôte de la room peut modifier les options");
       return;
@@ -115,7 +110,6 @@ export default function RoomPage() {
     try {
       await updateIncludeChampions(roomCode, include);
       
-      // Mettre à jour l'équipe générée si elle existe déjà
       if (room?.generatedTeam && room.generatedTeam.length > 0) {
         const updatedTeam = include 
           ? room.generatedTeam.map(player => {
@@ -179,18 +173,24 @@ export default function RoomPage() {
       return undefined;
     }
     
-    // Filtrer les champions déjà utilisés
     const availableChampions = championsForRole.filter((champion: string) => !usedChampions.has(champion));
     
-    // S'il ne reste plus de champions disponibles pour ce rôle, retourner undefined
     if (availableChampions.length === 0) {
       console.warn(`Tous les champions pour le rôle ${role} ont déjà été assignés`);
       return undefined;
     }
     
-    // Sélectionner un champion aléatoire parmi les disponibles
     const randomIndex = Math.floor(Math.random() * availableChampions.length);
     return availableChampions[randomIndex];
+  };
+  
+  const copyRoomCode = () => {
+    navigator.clipboard.writeText(roomCode);
+    setCopied(true);
+    
+    setTimeout(() => {
+      setCopied(false);
+    }, 2000);
   };
   
   if (loading) {
@@ -228,7 +228,25 @@ export default function RoomPage() {
               <span>Randomiseur de rôles LoL</span>
               <div className="flex items-center justify-center gap-2 text-xl">
                 <span className="text-gray-400">Room:</span>
-                <span className="font-mono bg-zinc-700 px-3 py-1 rounded">{roomCode}</span>
+                <div className="flex items-center">
+                  <span className="font-mono bg-zinc-700 px-3 py-1 rounded">{roomCode}</span>
+                  <button 
+                    onClick={copyRoomCode}
+                    className="ml-2 p-1.5 rounded-full bg-zinc-700 hover:bg-zinc-600 transition-colors"
+                    title="Copier le code"
+                  >
+                    {copied ? (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-400">
+                        <path d="M20 6L9 17l-5-5"/>
+                      </svg>
+                    ) : (
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-300">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                      </svg>
+                    )}
+                  </button>
+                </div>
               </div>
               <div className="text-sm mt-2 text-gray-400">
                 {room.owner === username ? (
