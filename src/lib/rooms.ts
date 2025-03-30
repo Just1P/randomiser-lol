@@ -80,12 +80,12 @@ export const addPlayerToRoom = async (roomCode: string, playerName: string): Pro
     
     const room = roomSnap.data() as Room;
     
-    if (room.connectedPlayers.length >= room.maxPlayers) {
-        throw new Error("La room est complète");
-    }
-    
     if (room.connectedPlayers.includes(playerName)) {
         return;
+    }
+    
+    if (room.connectedPlayers.length >= room.maxPlayers) {
+        throw new Error(`Room complète (${room.connectedPlayers.length}/${room.maxPlayers})`);
     }
     
     const newPlayer: Player = {

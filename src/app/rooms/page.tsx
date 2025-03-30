@@ -11,6 +11,7 @@ import { createRoom, joinRoom } from "@/lib/rooms";
 import { db } from "@/lib/firebase";
 import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import { motion } from "framer-motion";
 
 export default function RoomsPage() {
   const router = useRouter();
@@ -116,22 +117,44 @@ export default function RoomsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-zinc-900 text-gray-100 p-8">
-      <div className="container mx-auto max-w-md">
-        <Card className="bg-zinc-800 border-none shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-3xl font-bold text-center text-[#3b82f6] flex justify-center items-center gap-3 mb-6">
-              <span>Randomiseur LoL - Rooms</span>
-            </CardTitle>
+    <main className="min-h-screen text-gray-100 p-4 md:p-8 relative overflow-hidden bg-zinc-900">
+      <motion.div 
+        className="container mx-auto max-w-4xl relative z-10"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <Card className="bg-zinc-800/70 backdrop-blur-xl border-none shadow-2xl rounded-xl overflow-hidden">
+          <CardHeader className="border-b border-zinc-700/40 pb-4">
+            <motion.div
+              initial={{ scale: 0.95 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.5, type: "spring" }}
+            >
+              <CardTitle className="text-3xl font-bold text-center flex justify-center items-center gap-3 mb-2">
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-blue-600">
+                  Randomiseur LoL - Rooms
+                </span>
+              </CardTitle>
+              <p className="text-center text-zinc-400 text-sm">
+                Créez ou rejoignez une partie multijoueur
+              </p>
+            </motion.div>
           </CardHeader>
 
-          <CardContent>
+          <CardContent className="p-4 md:p-6">
             <Tabs defaultValue="create">
-              <TabsList className="mb-6 w-full">
-                <TabsTrigger value="create" className="flex-1 hover:bg-zinc-700 data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white">
+              <TabsList className="mb-6 w-full bg-zinc-700/50 p-1">
+                <TabsTrigger 
+                  value="create" 
+                  className="flex-1 rounded-md data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white hover:text-white transition-all"
+                >
                   Créer une Room
                 </TabsTrigger>
-                <TabsTrigger value="join" className="flex-1 hover:bg-zinc-700 data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white">
+                <TabsTrigger 
+                  value="join" 
+                  className="flex-1 rounded-md data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white hover:text-white transition-all"
+                >
                   Rejoindre
                 </TabsTrigger>
               </TabsList>
@@ -139,27 +162,27 @@ export default function RoomsPage() {
               <TabsContent value="create">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="ownerName">Votre nom</Label>
+                    <Label htmlFor="ownerName" className="text-zinc-300">Votre nom</Label>
                     <Input
                       id="ownerName"
                       placeholder="Entrez votre nom"
                       value={ownerName}
                       onChange={(e) => setOwnerName(e.target.value)}
-                      className="bg-zinc-700 border-zinc-600"
+                      className="bg-zinc-700/70 border-zinc-600 focus:border-blue-500 transition-colors"
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="playerCount">Nombre de joueurs</Label>
-                    <div className="flex border border-zinc-600 rounded-md overflow-hidden">
+                    <Label htmlFor="playerCount" className="text-zinc-300">Nombre de joueurs</Label>
+                    <div className="flex border border-zinc-600 rounded-md overflow-hidden bg-zinc-700/50">
                       {[1, 2, 3, 4, 5].map((count) => (
                         <button
                           key={count}
                           type="button"
                           className={`px-3 py-1.5 min-w-10 text-sm ${
                             playerCount === count 
-                              ? "bg-blue-500 text-white font-medium" 
-                              : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                              ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium" 
+                              : "bg-transparent text-zinc-300 hover:bg-zinc-600 transition-colors"
                           }`}
                           onClick={() => setPlayerCount(count)}
                         >
@@ -170,11 +193,19 @@ export default function RoomsPage() {
                   </div>
                   
                   <Button 
-                    className="w-full bg-[#3b82f6] hover:bg-blue-600" 
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none shadow-lg hover:shadow-xl transition-all duration-200" 
                     disabled={loading}
                     onClick={handleCreateRoom}
                   >
-                    {loading ? "Création..." : "Créer la Room"}
+                    {loading ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Création...
+                      </div>
+                    ) : "Créer la Room"}
                   </Button>
                 </div>
               </TabsContent>
@@ -182,34 +213,49 @@ export default function RoomsPage() {
               <TabsContent value="join">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="roomCode">Code de la Room</Label>
+                    <Label htmlFor="roomCode" className="text-zinc-300">Code de la Room</Label>
                     <Input
                       id="roomCode"
                       placeholder="Entrez le code (ex: ABC123)"
                       value={roomCode}
                       onChange={(e) => setRoomCode(e.target.value)}
-                      className="bg-zinc-700 border-zinc-600"
+                      className="bg-zinc-700/70 border-zinc-600 focus:border-blue-500 transition-colors uppercase"
                     />
                   </div>
                   <Button 
-                    className="w-full bg-[#3b82f6] hover:bg-blue-600" 
+                    className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none shadow-lg hover:shadow-xl transition-all duration-200" 
                     disabled={loading}
                     onClick={handleJoinRoom}
                   >
-                    {loading ? "Connexion..." : "Rejoindre la Room"}
+                    {loading ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Connexion...
+                      </div>
+                    ) : "Rejoindre la Room"}
                   </Button>
                 </div>
               </TabsContent>
             </Tabs>
 
             {error && (
-              <p className="mt-4 text-red-400 text-center">{error}</p>
+              <motion.p 
+                className="mt-4 text-red-400 text-center bg-red-500/10 py-2 px-3 rounded-md"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                {error}
+              </motion.p>
             )}
 
             <div className="mt-8 text-center">
               <Button 
                 variant="outline" 
-                className="border-zinc-600 hover:bg-zinc-700 mr-4"
+                className="border-zinc-600 hover:bg-zinc-700/60 transition-colors"
                 onClick={() => router.push("/")}
               >
                 Retour à l&apos;accueil
@@ -217,7 +263,7 @@ export default function RoomsPage() {
               
               <Button 
                 variant="outline" 
-                className="border-blue-600 text-blue-400 hover:bg-blue-900"
+                className="border-blue-600 text-blue-400 hover:bg-blue-900/20 ml-2 transition-colors"
                 onClick={handleTestFirebase}
                 disabled={loading}
               >
@@ -226,13 +272,13 @@ export default function RoomsPage() {
             </div>
           </CardContent>
           
-          <CardFooter className="flex justify-center pb-6">
-            <p className="text-sm text-gray-500">
+          <CardFooter className="flex justify-center pb-6 border-t border-zinc-700/40 pt-4">
+            <p className="text-sm text-zinc-400">
               Développé avec ❤️ pour les joueurs de LoL
             </p>
           </CardFooter>
         </Card>
-      </div>
+      </motion.div>
     </main>
   );
 } 
