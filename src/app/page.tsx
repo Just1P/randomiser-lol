@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import HistoryList from "@/components/HistoryList";
 import { useHistoryStore } from "@/lib/history-store";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { META_CHAMPIONS_BY_ROLE } from "@/lib/api";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -50,11 +51,18 @@ export default function Home() {
     const assignedPlayers = randomizeRoles(updatedPlayers);
     
     if (includeChampions) {
+      const usedChampions: Set<string> = new Set();
+      
       return assignedPlayers.map(player => {
         if (player.role) {
+          const champion = getRandomChampionForRole(player.role, usedChampions);
+          if (champion) {
+            usedChampions.add(champion);
+          }
+          
           return {
             ...player,
-            champion: getRandomChampionForRole(player.role)
+            champion: champion
           };
         }
         return player;
@@ -80,11 +88,18 @@ export default function Home() {
     
     if (team.length > 0) {
       if (include) {
+        const usedChampions: Set<string> = new Set();
+        
         setTeam(team.map(player => {
           if (player.role) {
+            const champion = getRandomChampionForRole(player.role, usedChampions);
+            if (champion) {
+              usedChampions.add(champion);
+            }
+            
             return {
               ...player,
-              champion: getRandomChampionForRole(player.role)
+              champion: champion
             };
           }
           return player;
@@ -103,18 +118,23 @@ export default function Home() {
     setActiveTab("form");
   };
 
-  const getRandomChampionForRole = (role: Role): string => {
-    const champions: Record<Role, string[]> = {
-      [Role.TOP]: ["Darius", "Fiora", "Garen", "Jax", "Malphite"],
-      [Role.JUNGLE]: ["Lee Sin", "Elise", "Vi", "Warwick", "Zac"],
-      [Role.MID]: ["Ahri", "LeBlanc", "Syndra", "Zed", "Yasuo"],
-      [Role.ADC]: ["Ashe", "Caitlyn", "Ezreal", "Jinx", "Jhin"],
-      [Role.SUPPORT]: ["Leona", "Lulu", "Morgana", "Thresh", "Pyke"]
-    };
+  const getRandomChampionForRole = (role: Role, usedChampions: Set<string> = new Set()): string | undefined => {
+    const championsForRole = META_CHAMPIONS_BY_ROLE[role] || [];
     
-    const championsForRole = champions[role];
-    const randomIndex = Math.floor(Math.random() * championsForRole.length);
-    return championsForRole[randomIndex];
+    if (championsForRole.length === 0) {
+      console.error(`Aucun champion trouvé pour le rôle ${role}`);
+      return undefined;
+    }
+    
+    const availableChampions = championsForRole.filter(champion => !usedChampions.has(champion));
+    
+    if (availableChampions.length === 0) {
+      console.warn(`Tous les champions pour le rôle ${role} ont déjà été assignés`);
+      return undefined;
+    }
+    
+    const randomIndex = Math.floor(Math.random() * availableChampions.length);
+    return availableChampions[randomIndex];
   };
 
   return (

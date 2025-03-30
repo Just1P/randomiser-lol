@@ -19,7 +19,7 @@ export interface ChampionWithRole extends Champion {
 
 export type ChampionsData = Record<string, Champion>;
 
-const META_CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
+export const META_CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
   TOP: [
     "Aatrox", "Ambessa", "Camille", "Cho'Gath", "Darius", 
     "Dr. Mundo", "Fiora", "Gangplank", "Garen", "Gnar", 
@@ -74,6 +74,30 @@ const META_CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
 };
 
 const DDRAGON_BASE_URL = 'https://ddragon.leagueoflegends.com/cdn';
+
+const CHAMPION_IMAGE_MAPPING: Record<string, string> = {
+  "Aurelion Sol": "AurelionSol",
+  "Bel'Veth": "Belveth",
+  "Cho'Gath": "Chogath",
+  "Dr. Mundo": "DrMundo",
+  "Jarvan IV": "JarvanIV",
+  "K'Sante": "KSante",
+  "Kai'Sa": "Kaisa",
+  "Kha'Zix": "Khazix",
+  "Kog'Maw": "KogMaw",
+  "LeBlanc": "Leblanc",
+  "Lee Sin": "LeeSin",
+  "Master Yi": "MasterYi",
+  "Miss Fortune": "MissFortune",
+  "Nunu & Willump": "Nunu",
+  "Rek'Sai": "RekSai",
+  "Renata Glasc": "Renata",
+  "Tahm Kench": "TahmKench",
+  "Twisted Fate": "TwistedFate",
+  "Vel'Koz": "Velkoz",
+  "Xin Zhao": "XinZhao",
+  "Wukong": "MonkeyKing"
+};
 
 export async function getLatestVersion(): Promise<string> {
   try {
@@ -188,7 +212,18 @@ export async function getChampionsByRole(role: Role): Promise<ChampionWithRole[]
   return roleChampions;
 }
 
-export function getChampionImageUrl(championId: string, version?: string): string {
+export function getChampionImageUrl(championName: string, version?: string): string {
   const v = version || '14.10.1';
-  return `${DDRAGON_BASE_URL}/${v}/img/champion/${championId}.png`;
+  
+  let imageId = CHAMPION_IMAGE_MAPPING[championName];
+  
+  if (!imageId) {
+    imageId = championName
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join('')
+      .replace(/['\.]/g, '');
+  }
+  
+  return `${DDRAGON_BASE_URL}/${v}/img/champion/${imageId}.png`;
 } 

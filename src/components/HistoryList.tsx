@@ -7,6 +7,7 @@ import { useHistoryStore, formatHistoryDate } from "@/lib/history-store";
 import { Player } from "@/types/player";
 import { Role } from "@/enums/role";
 import Image from "next/image";
+import { getChampionImageUrl as getChampionImage } from "@/lib/api";
 
 interface HistoryListProps {
   onSelectTeam: (team: Player[]) => void;
@@ -59,10 +60,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
 
   const getPlayerCountInfo = (team: Player[]) => {
     return `${team.length} joueur${team.length > 1 ? 's' : ''}`;
-  };
-
-  const getChampionImageUrl = (champion: string) => {
-    return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
   
   const getLolalytics = (champion: string) => {
@@ -163,7 +160,7 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                             <div className="flex items-center gap-2">
                               <div className="relative w-8 h-8 overflow-hidden rounded">
                                 <Image 
-                                  src={getChampionImageUrl(player.champion)}
+                                  src={getChampionImage(player.champion)}
                                   alt={player.champion}
                                   fill
                                   sizes="32px"

@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Player } from "@/types/player";
 import { Role } from "@/enums/role";
 import Image from "next/image";
+import { getChampionImageUrl as getChampionImage } from "@/lib/api";
 
 interface TeamDisplayProps {
   team: Player[];
@@ -32,10 +33,6 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
     [Role.MID]: "bg-blue-500",
     [Role.ADC]: "bg-rose-500",
     [Role.SUPPORT]: "bg-purple-500"
-  };
-
-  const getChampionImageUrl = (champion: string) => {
-    return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
   
   const getLolalytics = (champion: string) => {
@@ -71,7 +68,7 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
                 <div className="mt-2 flex-grow">
                   <div className="relative w-full h-32 mb-3 overflow-hidden rounded">
                     <Image 
-                      src={getChampionImageUrl(player.champion)}
+                      src={getChampionImage(player.champion)}
                       alt={player.champion}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
