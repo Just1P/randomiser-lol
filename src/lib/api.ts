@@ -1,6 +1,5 @@
 import { Role } from './constants';
 
-// Types pour les champions de l'API Riot
 export interface Champion {
   id: string;
   key: string;
@@ -11,17 +10,15 @@ export interface Champion {
     sprite: string;
     group: string;
   };
-  tags: string[]; // rôles du champion (Fighter, Tank, Mage, etc.)
+  tags: string[];
 }
 
-// Type étendu avec le rôle assigné
 export interface ChampionWithRole extends Champion {
   assignedRole: Role;
 }
 
 export type ChampionsData = Record<string, Champion>;
 
-// Champions par rôle selon la méta actuelle (basé sur les captures d'écran)
 const META_CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
   TOP: [
     "Aatrox", "Ambessa", "Camille", "Cho'Gath", "Darius", 
@@ -76,22 +73,19 @@ const META_CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
   ]
 };
 
-// URL de base pour l'API Ddragon (ne nécessite pas de clé API)
 const DDRAGON_BASE_URL = 'https://ddragon.leagueoflegends.com/cdn';
 
-// Fonction pour obtenir la dernière version de l'API
 export async function getLatestVersion(): Promise<string> {
   try {
     const response = await fetch('https://ddragon.leagueoflegends.com/api/versions.json');
     const versions = await response.json();
-    return versions[0]; // Première version est la plus récente
+    return versions[0];
   } catch (error) {
     console.error('Erreur lors de la récupération de la version:', error);
-    return '14.10.1'; // Version de secours
+    return '14.10.1';
   }
 }
 
-// Fonction pour récupérer tous les champions
 export async function getAllChampions(): Promise<ChampionsData> {
   try {
     const version = await getLatestVersion();
@@ -104,11 +98,10 @@ export async function getAllChampions(): Promise<ChampionsData> {
   }
 }
 
-// Fonction pour trouver un champion par son nom (insensible à la casse)
 function findChampionByName(champions: ChampionsData, name: string): Champion | null {
   const normalizedName = name.toLowerCase().trim();
   
-  // Correspondance exacte d'abord (insensible à la casse)
+ 
   for (const champId in champions) {
     const champion = champions[champId];
     if (champion.name.toLowerCase() === normalizedName) {
@@ -116,7 +109,7 @@ function findChampionByName(champions: ChampionsData, name: string): Champion | 
     }
   }
   
-  // Cas spéciaux pour les champions dont le nom peut varier
+ 
   const specialCases: Record<string, string[]> = {
     "nunu & willump": ["nunu"],
     "renata glasc": ["renata"],
@@ -133,12 +126,12 @@ function findChampionByName(champions: ChampionsData, name: string): Champion | 
     "cho'gath": ["chogath"]
   };
   
-  // Vérifier si c'est un cas spécial
+ 
   for (const [standardName, alternatives] of Object.entries(specialCases)) {
     if (standardName === normalizedName || alternatives.includes(normalizedName)) {
-      // Rechercher par nom standard ou par alternative
+     
       const searchName = standardName.includes("'") 
-        ? standardName.replace(/'/g, "") // Supprimer les apostrophes
+        ? standardName.replace(/'/g, "")
         : standardName;
         
       for (const champId in champions) {
@@ -153,24 +146,23 @@ function findChampionByName(champions: ChampionsData, name: string): Champion | 
     }
   }
   
-  // Si aucune correspondance n'est trouvée, essayer une recherche partielle
+ 
   for (const champId in champions) {
     const champion = champions[champId];
     const champNameLower = champion.name.toLowerCase();
     
-    // Chercher si le nom normalisé est contenu dans le nom du champion,
-    // ou si le nom du champion est contenu dans le nom normalisé
+   
+   
     if (champNameLower.includes(normalizedName) || normalizedName.includes(champNameLower)) {
       return champion;
     }
   }
   
-  // Si toujours aucune correspondance, log et retourne null
+ 
   console.warn(`Champion non trouvé: "${name}"`);
   return null;
 }
 
-// Fonction pour obtenir les champions par rôle selon la méta actuelle
 export async function getChampionsByRole(role: Role): Promise<ChampionWithRole[]> {
   const allChampions = await getAllChampions();
   const metaChampionNames = META_CHAMPIONS_BY_ROLE[role];
@@ -181,7 +173,7 @@ export async function getChampionsByRole(role: Role): Promise<ChampionWithRole[]
   for (const name of metaChampionNames) {
     const champion = findChampionByName(allChampions, name);
     if (champion) {
-      // Convertir en ChampionWithRole
+     
       const championWithRole: ChampionWithRole = {
         ...champion,
         assignedRole: role
@@ -196,7 +188,6 @@ export async function getChampionsByRole(role: Role): Promise<ChampionWithRole[]
   return roleChampions;
 }
 
-// Fonction pour récupérer les URL d'images des champions
 export function getChampionImageUrl(championId: string, version?: string): string {
   const v = version || '14.10.1';
   return `${DDRAGON_BASE_URL}/${v}/img/champion/${championId}.png`;

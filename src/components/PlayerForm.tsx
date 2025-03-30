@@ -17,7 +17,7 @@ interface PlayerFormProps {
   onToggleChampions: (include: boolean) => void;
 }
 
-// Maximum number of players possible
+
 const MAX_PLAYERS = 5;
 
 export default function PlayerForm({ 
@@ -27,13 +27,11 @@ export default function PlayerForm({
   includeChampions, 
   onToggleChampions 
 }: PlayerFormProps) {
-  // Store complete set of players, even those not displayed
   const allPlayersRef = useRef<Player[]>(players.length > 0 ? 
     [...players] : 
     Array(MAX_PLAYERS).fill(null).map(() => ({ id: uuidv4(), name: "" }))
   );
   
-  // Get saved player count or use 5 as default
   const [playerCount, setPlayerCount] = useState<number>(() => {
     if (typeof window !== 'undefined') {
       const savedCount = localStorage.getItem("playerCount");
@@ -42,70 +40,56 @@ export default function PlayerForm({
     return 5;
   });
 
-  // Currently displayed players (depends on playerCount)
   const [displayedPlayers, setDisplayedPlayers] = useState<Player[]>(() => {
     if (players.length > 0) {
-      // Save all initial players in the reference
       const allPlayers = [...players];
       
-      // Fill with empty players if needed
       while (allPlayers.length < MAX_PLAYERS) {
         allPlayers.push({ id: uuidv4(), name: "" });
       }
       
       allPlayersRef.current = allPlayers;
       
-      // Only return displayed number of players
       return allPlayers.slice(0, playerCount);
     }
     
-    // Create default array with current player count
     return Array(playerCount).fill(null).map(() => ({ id: uuidv4(), name: "" }));
   });
 
-  // Effect to update displayed players when playerCount changes
   useEffect(() => {
-    // Update displayed players based on new playerCount
     setDisplayedPlayers(allPlayersRef.current.slice(0, playerCount));
     
-    // Save playerCount to localStorage
     if (typeof window !== 'undefined') {
       localStorage.setItem("playerCount", playerCount.toString());
     }
   }, [playerCount]);
 
   const handlePlayerNameChange = (index: number, name: string) => {
-    // Update displayed players
     const newDisplayedPlayers = [...displayedPlayers];
     newDisplayedPlayers[index] = { ...newDisplayedPlayers[index], name };
     setDisplayedPlayers(newDisplayedPlayers);
     
-    // Update complete reference as well
     const allPlayers = [...allPlayersRef.current];
     allPlayers[index] = { ...allPlayers[index], name };
     allPlayersRef.current = allPlayers;
     
-    // Update parent state
     setPlayers(allPlayers.slice(0, playerCount));
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Check that all player names are filled
     if (displayedPlayers.some(player => !player.name.trim())) {
       alert("Veuillez entrer tous les noms des joueurs");
       return;
     }
     
-    // Check that there are no duplicate names
     const uniqueNames = new Set(displayedPlayers.map(player => player.name.trim()));
     if (uniqueNames.size !== displayedPlayers.length) {
       alert("Tous les noms des joueurs doivent être uniques");
       return;
     }
     
-    // Only send currently displayed players
     onSubmit(displayedPlayers);
   };
 
@@ -149,7 +133,7 @@ export default function PlayerForm({
           </div>
         </div>
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {displayedPlayers.map((player, index) => (
               <div key={player.id} className="space-y-2">

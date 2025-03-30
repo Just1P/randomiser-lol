@@ -16,10 +16,8 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
   const { entries, clearHistory, deleteEntry } = useHistoryStore();
   const [expandedEntry, setExpandedEntry] = useState<string | null>(null);
 
-  // Role order for sorting
   const roleOrder = [Role.TOP, Role.JUNGLE, Role.MID, Role.ADC, Role.SUPPORT];
 
-  // Role color mapping
   const roleColors: Record<Role, string> = {
     [Role.TOP]: "bg-amber-500",
     [Role.JUNGLE]: "bg-emerald-500",
@@ -28,7 +26,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
     [Role.SUPPORT]: "bg-purple-500"
   };
 
-  // Sort players by role
   const sortPlayersByRole = (players: Player[]): Player[] => {
     return [...players].sort((a, b) => {
       if (!a.role || !b.role) return 0;
@@ -36,7 +33,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
     });
   };
 
-  // Empty history state
   if (entries.length === 0) {
     return (
       <Card className="w-full">
@@ -65,7 +61,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
     return `${team.length} joueur${team.length > 1 ? 's' : ''}`;
   };
 
-  // Helper function to get champion image URL (placeholder)
   const getChampionImageUrl = (champion: string) => {
     return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
@@ -90,7 +85,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
       <CardContent className="p-0">
         <ul className="divide-y divide-zinc-700">
           {entries.map((entry) => {
-            // Sort players by role for display
             const sortedPlayers = sortPlayersByRole(entry.team);
             
             return (
@@ -147,7 +141,6 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                   </div>
                 </div>
                 
-                {/* Expanded team details */}
                 {expandedEntry === entry.id && (
                   <div className="mt-3 pt-3 border-t border-zinc-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                     {sortedPlayers.map((player: Player, index: number) => (

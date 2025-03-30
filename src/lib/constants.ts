@@ -16,7 +16,6 @@ export const ROLE_COLORS: Record<Role, string> = {
   SUPPORT: "support"
 };
 
-// Example champions for each role
 export const CHAMPIONS_BY_ROLE: Record<Role, string[]> = {
   TOP: [
     "Aatrox", "Camille", "Darius", "Fiora", "Garen", 

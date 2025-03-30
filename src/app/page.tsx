@@ -19,16 +19,13 @@ export default function Home() {
   
   const { addEntry } = useHistoryStore();
 
-  // Load saved players and champion preference
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Load player data if exists
       const savedPlayers = localStorage.getItem("players");
       if (savedPlayers) {
         setPlayers(JSON.parse(savedPlayers));
       }
 
-      // Load champions preference if exists
       const savedIncludeChampions = localStorage.getItem("includeChampions");
       if (savedIncludeChampions) {
         setIncludeChampions(savedIncludeChampions === "true");
@@ -50,10 +47,8 @@ export default function Home() {
 
   const generateTeam = (playersList: Player[]): Player[] => {
     const updatedPlayers = [...playersList];
-    // For each player in our list, randomize a role
     const assignedPlayers = randomizeRoles(updatedPlayers);
     
-    // For each player, get a champion based on their role if includeChampions is true
     if (includeChampions) {
       return assignedPlayers.map(player => {
         if (player.role) {
@@ -73,7 +68,6 @@ export default function Home() {
     const generatedTeam = generateTeam(playersList);
     setTeam(generatedTeam);
     
-    // Add to history
     addEntry({
       timestamp: new Date().getTime(),
       team: generatedTeam,
@@ -84,10 +78,8 @@ export default function Home() {
   const handleToggleChampions = (include: boolean) => {
     setIncludeChampions(include);
     
-    // If champions are toggled on, regenerate the team with champions
     if (team.length > 0) {
       if (include) {
-        // Add champions to existing team
         setTeam(team.map(player => {
           if (player.role) {
             return {
@@ -98,7 +90,6 @@ export default function Home() {
           return player;
         }));
       } else {
-        // Remove champions from existing team
         setTeam(team.map(player => ({
           ...player,
           champion: undefined
@@ -109,11 +100,10 @@ export default function Home() {
 
   const handleSelectHistoryTeam = (historyTeam: Player[]) => {
     setTeam(historyTeam);
-    setActiveTab("form"); // Switch back to form tab to see the team
+    setActiveTab("form");
   };
 
   const getRandomChampionForRole = (role: Role): string => {
-    // These are placeholder champion lists - in a real app, you would have a more complete list
     const champions: Record<Role, string[]> = {
       [Role.TOP]: ["Darius", "Fiora", "Garen", "Jax", "Malphite"],
       [Role.JUNGLE]: ["Lee Sin", "Elise", "Vi", "Warwick", "Zac"],

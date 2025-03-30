@@ -11,7 +11,6 @@ interface TeamDisplayProps {
 }
 
 export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps) {
-  // Sort players by role order (TOP, JUNGLE, MID, ADC, SUPPORT)
   const roleOrder = [Role.TOP, Role.JUNGLE, Role.MID, Role.ADC, Role.SUPPORT];
   
   const sortedTeam = [...team].sort((a, b) => {
@@ -19,7 +18,6 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
     return roleOrder.indexOf(a.role) - roleOrder.indexOf(b.role);
   });
 
-  // Calculate optimal grid columns based on team size
   const getGridCols = () => {
     const count = team.length;
     if (count <= 2) return "grid-cols-1 md:grid-cols-2";
@@ -28,7 +26,6 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
     return "grid-cols-1 md:grid-cols-2 lg:grid-cols-5";
   };
 
-  // Role color mapping
   const roleColors: Record<Role, string> = {
     [Role.TOP]: "bg-amber-500",
     [Role.JUNGLE]: "bg-emerald-500",
@@ -37,7 +34,6 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
     [Role.SUPPORT]: "bg-purple-500"
   };
 
-  // Helper function to get champion image URL (placeholder)
   const getChampionImageUrl = (champion: string) => {
     return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
