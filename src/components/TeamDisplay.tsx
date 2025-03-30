@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Player } from "@/types/player";
 import { Role } from "@/enums/role";
 import Image from "next/image";
-import { getChampionImageUrl as getChampionImage } from "@/lib/api";
+import { getChampionSplashUrl, getChampionImageUrl } from "@/lib/api";
 
 interface TeamDisplayProps {
   team: Player[];
@@ -25,6 +25,24 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
     if (count <= 3) return "grid-cols-1 md:grid-cols-3";
     if (count <= 4) return "grid-cols-1 md:grid-cols-2 lg:grid-cols-4";
     return "grid-cols-1 md:grid-cols-2 lg:grid-cols-5";
+  };
+
+  const getImageHeight = () => {
+    const count = team.length;
+    if (count <= 2) return "h-60";
+    if (count <= 3) return "h-50";
+    if (count <= 4) return "h-35";
+    return "h-32";
+  };
+
+  const shouldUseSplashArt = team.length < 5;
+  
+  const getChampionImageSource = (championName: string) => {
+    if (shouldUseSplashArt) {
+      return getChampionSplashUrl(championName);
+    } else {
+      return getChampionImageUrl(championName);
+    }
   };
 
   const roleColors: Record<Role, string> = {
@@ -66,17 +84,17 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
               )}
               {includeChampions && player.champion && (
                 <div className="mt-2 flex-grow">
-                  <div className="relative w-full h-32 mb-3 overflow-hidden rounded">
+                  <div className={`relative w-full ${getImageHeight()} mb-3 overflow-hidden rounded`}>
                     <Image 
-                      src={getChampionImage(player.champion)}
+                      src={getChampionImageSource(player.champion)}
                       alt={player.champion}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover transition-transform hover:scale-110 duration-300"
+                      className={`object-cover ${shouldUseSplashArt ? 'object-center object-[center_25%]' : 'object-center'} transition-transform hover:scale-110 duration-300`}
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                    <p className="absolute bottom-2 left-2 text-sm font-medium">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                    <p className="absolute bottom-2 left-2 text-sm font-medium drop-shadow-md">
                       {player.champion}
                     </p>
                   </div>

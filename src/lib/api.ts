@@ -226,4 +226,18 @@ export function getChampionImageUrl(championName: string, version?: string): str
   }
   
   return `${DDRAGON_BASE_URL}/${v}/img/champion/${imageId}.png`;
+}
+
+export function getChampionSplashUrl(championName: string): string {
+  let imageId = CHAMPION_IMAGE_MAPPING[championName];
+  
+  if (!imageId) {
+    imageId = championName
+      .split(' ')
+      .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+      .join('')
+      .replace(/['\.]/g, '');
+  }
+  
+  return `${DDRAGON_BASE_URL}/img/champion/splash/${imageId}_0.jpg`;
 } 
