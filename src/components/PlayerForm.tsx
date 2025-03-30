@@ -15,6 +15,9 @@ interface PlayerFormProps {
   onSubmit: (players: Player[]) => void;
   includeChampions: boolean;
   onToggleChampions: (include: boolean) => void;
+  isRoom?: boolean;
+  currentUser?: string;
+  isLoading?: boolean;
 }
 
 
@@ -25,7 +28,10 @@ export default function PlayerForm({
   setPlayers, 
   onSubmit, 
   includeChampions, 
-  onToggleChampions 
+  onToggleChampions,
+  isRoom = false,
+  currentUser = "",
+  isLoading = false
 }: PlayerFormProps) {
   const allPlayersRef = useRef<Player[]>(players.length > 0 ? 
     [...players] : 
@@ -107,7 +113,7 @@ export default function PlayerForm({
           <div className="glass-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           </div>
-          Configurer l&apos;équipe
+          {isRoom ? "Joueurs dans la room" : "Configurer l'équipe"}
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -137,8 +143,11 @@ export default function PlayerForm({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {displayedPlayers.map((player, index) => (
               <div key={player.id} className="space-y-2">
-                <label htmlFor={`player-${index}`} className="text-sm font-medium">
+                <label htmlFor={`player-${index}`} className="text-sm font-medium flex items-center">
                   Joueur {index + 1}
+                  {isRoom && player.name === currentUser && (
+                    <span className="ml-2 text-xs bg-blue-500 text-white px-1.5 py-0.5 rounded-full">Vous</span>
+                  )}
                 </label>
                 <Input
                   id={`player-${index}`}
@@ -146,6 +155,7 @@ export default function PlayerForm({
                   onChange={(e) => handlePlayerNameChange(index, e.target.value)}
                   placeholder={`Nom du joueur ${index + 1}`}
                   className="bg-zinc-800 border-zinc-700"
+                  disabled={isRoom && player.name !== "" && player.name !== currentUser}
                 />
               </div>
             ))}
@@ -164,8 +174,9 @@ export default function PlayerForm({
             <Button 
               type="submit" 
               className="bg-[#3b82f6] text-white hover:bg-[#2563eb] transition-all font-medium"
+              disabled={isLoading}
             >
-              Générer l&apos;équipe
+              {isLoading ? "Génération en cours..." : "Générer l'équipe"}
             </Button>
           </div>
         </form>

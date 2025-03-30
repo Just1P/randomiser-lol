@@ -11,6 +11,8 @@ import HistoryList from "@/components/HistoryList";
 import { useHistoryStore } from "@/lib/history-store";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { META_CHAMPIONS_BY_ROLE } from "@/lib/api";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -159,6 +161,14 @@ export default function Home() {
               </TabsList>
 
               <TabsContent value="form">
+                <div className="mb-4 flex justify-center">
+                  <Link href="/rooms" passHref>
+                    <Button variant="outline" className="bg-[#3b82f6] text-white hover:bg-blue-600 border-none">
+                      Mode multijoueur
+                    </Button>
+                  </Link>
+                </div>
+                
                 <PlayerForm 
                   players={players} 
                   setPlayers={setPlayers} 

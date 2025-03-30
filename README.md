@@ -1,36 +1,74 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Randomiseur LoL
 
-## Getting Started
+Une application web pour générer aléatoirement des rôles pour les équipes de League of Legends, avec possibilité d'assigner des champions aléatoires adaptés à chaque rôle.
 
-First, run the development server:
+## Fonctionnalités
+
+- Génération aléatoire de rôles pour les joueurs
+- Attribution de champions aléatoires adaptés à chaque rôle
+- Historique des compositions d'équipe générées
+- Mode multijoueur avec système de rooms (nécessite configuration Firebase)
+
+## Démarrage rapide
+
+1. Cloner le projet
+2. Installer les dépendances:
+
+```bash
+npm install
+```
+
+3. Lancer le serveur de développement:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Ouvrir [http://localhost:3000](http://localhost:3000) dans votre navigateur
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Configuration du mode multijoueur
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Le mode multijoueur utilise Firebase Firestore pour synchroniser les données entre les utilisateurs. Pour l'utiliser:
 
-## Learn More
+1. Créez un projet sur [Firebase Console](https://console.firebase.google.com/)
+2. Activez Firestore et Authentication (email/password)
+3. Copiez le fichier `.env.local.example` en `.env.local`
+4. Remplacez les valeurs par les clés de votre projet Firebase:
 
-To learn more about Next.js, take a look at the following resources:
+```
+NEXT_PUBLIC_FIREBASE_API_KEY=...
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+NEXT_PUBLIC_FIREBASE_APP_ID=...
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+5. Redémarrez le serveur de développement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Comment utiliser le mode multijoueur
 
-## Deploy on Vercel
+1. Sur la page d'accueil, cliquez sur "Mode multijoueur"
+2. Vous pouvez soit:
+   - Créer une nouvelle room (vous deviendrez l'hôte)
+   - Rejoindre une room existante en utilisant un code à 6 caractères
+3. Partagez le code de room avec vos amis pour qu'ils puissent vous rejoindre
+4. Une fois dans la room, ajoutez des joueurs et générez l'équipe
+5. Toutes les actions sont synchronisées en temps réel pour tous les participants
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Déploiement
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+L'application peut être déployée sur Vercel ou tout autre hébergeur compatible avec Next.js:
+
+```bash
+npm run build
+```
+
+## Technologies utilisées
+
+- [Next.js 14](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Firebase](https://firebase.google.com/) (Firestore, Authentication)
+- [Riot API](https://developer.riotgames.com/) (pour les données de champions)
