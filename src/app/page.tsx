@@ -1,103 +1,182 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from "react";
+import { Player } from "@/types/player";
+import { Role } from "@/enums/role";
+import TeamDisplay from "@/components/TeamDisplay";
+import PlayerForm from "@/components/PlayerForm";
+import { randomizeRoles } from "@/lib/randomizer";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import HistoryList from "@/components/HistoryList";
+import { useHistoryStore } from "@/lib/history-store";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [team, setTeam] = useState<Player[]>([]);
+  const [activeTab, setActiveTab] = useState("form");
+  const [includeChampions, setIncludeChampions] = useState(false);
+  
+  const { addEntry } = useHistoryStore();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  // Load saved players and champion preference
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      // Load player data if exists
+      const savedPlayers = localStorage.getItem("players");
+      if (savedPlayers) {
+        setPlayers(JSON.parse(savedPlayers));
+      }
+
+      // Load champions preference if exists
+      const savedIncludeChampions = localStorage.getItem("includeChampions");
+      if (savedIncludeChampions) {
+        setIncludeChampions(savedIncludeChampions === "true");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && players.length > 0) {
+      localStorage.setItem("players", JSON.stringify(players));
+    }
+  }, [players]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem("includeChampions", String(includeChampions));
+    }
+  }, [includeChampions]);
+
+  const generateTeam = (playersList: Player[]): Player[] => {
+    const updatedPlayers = [...playersList];
+    // For each player in our list, randomize a role
+    const assignedPlayers = randomizeRoles(updatedPlayers);
+    
+    // For each player, get a champion based on their role if includeChampions is true
+    if (includeChampions) {
+      return assignedPlayers.map(player => {
+        if (player.role) {
+          return {
+            ...player,
+            champion: getRandomChampionForRole(player.role)
+          };
+        }
+        return player;
+      });
+    }
+    
+    return assignedPlayers;
+  };
+
+  const handleSubmit = (playersList: Player[]) => {
+    const generatedTeam = generateTeam(playersList);
+    setTeam(generatedTeam);
+    
+    // Add to history
+    addEntry({
+      timestamp: new Date().getTime(),
+      team: generatedTeam,
+      includesChampions: includeChampions
+    });
+  };
+
+  const handleToggleChampions = (include: boolean) => {
+    setIncludeChampions(include);
+    
+    // If champions are toggled on, regenerate the team with champions
+    if (team.length > 0) {
+      if (include) {
+        // Add champions to existing team
+        setTeam(team.map(player => {
+          if (player.role) {
+            return {
+              ...player,
+              champion: getRandomChampionForRole(player.role)
+            };
+          }
+          return player;
+        }));
+      } else {
+        // Remove champions from existing team
+        setTeam(team.map(player => ({
+          ...player,
+          champion: undefined
+        })));
+      }
+    }
+  };
+
+  const handleSelectHistoryTeam = (historyTeam: Player[]) => {
+    setTeam(historyTeam);
+    setActiveTab("form"); // Switch back to form tab to see the team
+  };
+
+  const getRandomChampionForRole = (role: Role): string => {
+    // These are placeholder champion lists - in a real app, you would have a more complete list
+    const champions: Record<Role, string[]> = {
+      [Role.TOP]: ["Darius", "Fiora", "Garen", "Jax", "Malphite"],
+      [Role.JUNGLE]: ["Lee Sin", "Elise", "Vi", "Warwick", "Zac"],
+      [Role.MID]: ["Ahri", "LeBlanc", "Syndra", "Zed", "Yasuo"],
+      [Role.ADC]: ["Ashe", "Caitlyn", "Ezreal", "Jinx", "Jhin"],
+      [Role.SUPPORT]: ["Leona", "Lulu", "Morgana", "Thresh", "Pyke"]
+    };
+    
+    const championsForRole = champions[role];
+    const randomIndex = Math.floor(Math.random() * championsForRole.length);
+    return championsForRole[randomIndex];
+  };
+
+  return (
+    <main className="min-h-screen bg-zinc-900 text-gray-100 p-8">
+      <div className="container mx-auto max-w-4xl">
+        <Card className="bg-zinc-800 border-none shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-3xl font-bold text-center text-[#3b82f6] flex justify-center items-center gap-3 mb-6">
+              <span>Randomiseur de rôles LoL</span>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent>
+            <Tabs defaultValue="form" value={activeTab} onValueChange={(value) => setActiveTab(value)}>
+              <TabsList className="mb-6 w-full">
+                <TabsTrigger value="form" className="flex-1 hover:bg-zinc-700 data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white">
+                  Équipe
+                </TabsTrigger>
+                <TabsTrigger value="history" className="flex-1 hover:bg-zinc-700 data-[state=active]:bg-[#3b82f6] data-[state=active]:text-white">
+                  Historique
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="form">
+                <PlayerForm 
+                  players={players} 
+                  setPlayers={setPlayers} 
+                  onSubmit={handleSubmit}
+                  includeChampions={includeChampions}
+                  onToggleChampions={handleToggleChampions}
+                />
+                
+                {team.length > 0 && (
+                  <div className="mt-8">
+                    <TeamDisplay team={team} includeChampions={includeChampions} />
+                  </div>
+                )}
+              </TabsContent>
+
+              <TabsContent value="history">
+                <HistoryList onSelectTeam={handleSelectHistoryTeam} />
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+          
+          <CardFooter className="flex justify-center pb-6">
+            <p className="text-sm text-gray-500">
+              Développé avec ❤️ pour les joueurs de LoL
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    </main>
   );
 }
