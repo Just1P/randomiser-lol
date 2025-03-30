@@ -18,6 +18,7 @@ export default function RoomsPage() {
   const [roomCode, setRoomCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [playerCount, setPlayerCount] = useState(5);
 
   const handleCreateRoom = async () => {
     if (!ownerName.trim()) {
@@ -29,7 +30,7 @@ export default function RoomsPage() {
     setError("");
 
     try {
-      const code = await createRoom(ownerName);
+      const code = await createRoom(ownerName, playerCount);
       // Stocker le nom pour l'utiliser dans la room
       localStorage.setItem("username", ownerName);
       // Rediriger vers la room
@@ -154,6 +155,27 @@ export default function RoomsPage() {
                       className="bg-zinc-700 border-zinc-600"
                     />
                   </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="playerCount">Nombre de joueurs</Label>
+                    <div className="flex border border-zinc-600 rounded-md overflow-hidden">
+                      {[1, 2, 3, 4, 5].map((count) => (
+                        <button
+                          key={count}
+                          type="button"
+                          className={`px-3 py-1.5 min-w-10 text-sm ${
+                            playerCount === count 
+                              ? "bg-blue-500 text-white font-medium" 
+                              : "bg-zinc-700 text-zinc-300 hover:bg-zinc-600"
+                          }`}
+                          onClick={() => setPlayerCount(count)}
+                        >
+                          {count}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
                   <Button 
                     className="w-full bg-[#3b82f6] hover:bg-blue-600" 
                     disabled={loading}
