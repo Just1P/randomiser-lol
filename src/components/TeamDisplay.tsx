@@ -37,6 +37,10 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
   const getChampionImageUrl = (champion: string) => {
     return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
+  
+  const getLolalytics = (champion: string) => {
+    return `https://lolalytics.com/lol/${champion.toLowerCase().replace(/[^a-z0-9]/g, '')}/build/`;
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -79,6 +83,15 @@ export default function TeamDisplay({ team, includeChampions }: TeamDisplayProps
                       {player.champion}
                     </p>
                   </div>
+                  <a 
+                    href={getLolalytics(player.champion)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors mt-1"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Voir le guide sur Lolalytics
+                  </a>
                 </div>
               )}
             </CardContent>

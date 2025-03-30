@@ -64,6 +64,10 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
   const getChampionImageUrl = (champion: string) => {
     return `https://ddragon.leagueoflegends.com/cdn/14.8.1/img/champion/${champion}.png`;
   };
+  
+  const getLolalytics = (champion: string) => {
+    return `https://lolalytics.com/lol/${champion.toLowerCase().replace(/[^a-z0-9]/g, '')}/build/`;
+  };
 
   return (
     <Card className="w-full">
@@ -155,17 +159,29 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                         </div>
                         
                         {entry.includesChampions && player.champion && (
-                          <div className="mt-2 flex items-center gap-2">
-                            <div className="relative w-8 h-8 overflow-hidden rounded">
-                              <Image 
-                                src={getChampionImageUrl(player.champion)}
-                                alt={player.champion}
-                                fill
-                                sizes="32px"
-                                className="object-cover"
-                              />
+                          <div className="mt-2 flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <div className="relative w-8 h-8 overflow-hidden rounded">
+                                <Image 
+                                  src={getChampionImageUrl(player.champion)}
+                                  alt={player.champion}
+                                  fill
+                                  sizes="32px"
+                                  className="object-cover"
+                                />
+                              </div>
+                              <span className="text-xs">{player.champion}</span>
                             </div>
-                            <span className="text-xs">{player.champion}</span>
+                            <a 
+                              href={getLolalytics(player.champion)} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="text-[10px] flex items-center gap-1 text-blue-400 hover:text-blue-300 transition-colors mt-2"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                              Guide Lolalytics
+                            </a>
                           </div>
                         )}
                       </div>
