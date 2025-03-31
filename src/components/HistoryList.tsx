@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useHistoryStore, formatHistoryDate } from "@/lib/history-store";
+import { useHistoryStore } from "@/stores/historyStore";
 import { Player } from "@/types/player";
 import { Role } from "@/enums/role";
 import Image from "next/image";
@@ -58,11 +58,11 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
     }
   };
 
-  const getPlayerCountInfo = (team: Player[]) => {
-    return `${team.length} joueur${team.length > 1 ? 's' : ''}`;
+  const getPlayerCountInfo = (players: Player[]): string => {
+    return `${players.length} joueur${players.length > 1 ? 's' : ''}`;
   };
   
-  const getLolalytics = (champion: string) => {
+  const getLolalytics = (champion: string): string => {
     return `https://lolalytics.com/lol/${champion.toLowerCase().replace(/[^a-z0-9]/g, '')}/build/`;
   };
 
@@ -86,7 +86,10 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
       <CardContent className="p-0">
         <ul className="divide-y divide-zinc-700">
           {entries.map((entry) => {
-            const sortedPlayers = sortPlayersByRole(entry.team);
+            const sortedPlayers = sortPlayersByRole(entry.players.map(p => ({
+              ...p,
+              id: `${p.name}-${p.role || 'unknown'}-${entry.id}`
+            } as Player)));
             
             return (
               <li key={entry.id} className="px-4 py-3 hover:bg-zinc-700/50 transition-colors">
@@ -97,17 +100,17 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                   >
                     <div className="flex items-center justify-between">
                       <p className="font-medium text-sm">
-                        {formatHistoryDate(entry.timestamp)}
+                        {entry.date}
                       </p>
                       <span className="text-xs text-zinc-400">
-                        {getPlayerCountInfo(entry.team)}
+                        {getPlayerCountInfo(sortedPlayers)}
                       </span>
                     </div>
                     
                     <div className="flex mt-1.5 gap-1.5">
-                      {sortedPlayers.map((player: Player, idx: number) => (
+                      {sortedPlayers.map((player: Player) => (
                         <div 
-                          key={idx} 
+                          key={player.id} 
                           className="w-8 h-8 flex items-center justify-center rounded-full text-xs bg-zinc-800 relative border border-zinc-700"
                           title={`${player.name} - ${player.role}`}
                         >
@@ -125,7 +128,7 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                       variant="ghost"
                       size="sm"
                       className="h-8 px-2 hover:bg-zinc-700 text-blue-400 hover:text-blue-300"
-                      onClick={() => onSelectTeam(entry.team)}
+                      onClick={() => onSelectTeam(sortedPlayers)}
                       title="Réutiliser cette composition"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-6M9 20v-4M15 20v-2M5 20v-9a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v9"/><path d="M5 11V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v2"/></svg>
@@ -144,8 +147,8 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                 
                 {expandedEntry === entry.id && (
                   <div className="mt-3 pt-3 border-t border-zinc-700 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-                    {sortedPlayers.map((player: Player, index: number) => (
-                      <div key={index} className="flex flex-col bg-zinc-800 p-2 rounded border border-zinc-700">
+                    {sortedPlayers.map((player: Player) => (
+                      <div key={player.id} className="flex flex-col bg-zinc-800 p-2 rounded border border-zinc-700">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-medium">{player.name}</span>
                           {player.role && (
@@ -155,7 +158,7 @@ export default function HistoryList({ onSelectTeam }: HistoryListProps) {
                           )}
                         </div>
                         
-                        {entry.includesChampions && player.champion && (
+                        {player.champion && (
                           <div className="mt-2 flex flex-col">
                             <div className="flex items-center gap-2">
                               <div className="relative w-8 h-8 overflow-hidden rounded">
