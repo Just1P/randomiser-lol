@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { GameCard } from '../components/GameCard';
+import '@testing-library/jest-dom';
+import { GameCard } from '../../src/components/GameCard';
 
 describe('GameCard', () => {
   const mockProps = {

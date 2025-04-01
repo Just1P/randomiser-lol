@@ -1,4 +1,5 @@
 import React from 'react';
+import NextImage from 'next/image';
 
 interface ImageProps {
   src: string | { toString: () => string };
@@ -11,14 +12,12 @@ interface ImageProps {
   style?: React.CSSProperties;
 }
 
-const Image = ({ src, alt, fill, ...props }: ImageProps) => (
-  <img 
+const Image = ({ src, alt, fill, className, ...props }: ImageProps) => (
+  <NextImage 
     src={typeof src === 'string' ? src : src?.toString()} 
     alt={alt || ''} 
-    style={{ 
-      objectFit: 'cover',
-      ...(fill ? { position: 'absolute', height: '100%', width: '100%' } : {}),
-    }}
+    className={className}
+    fill={fill}
     {...props} 
   />
 );

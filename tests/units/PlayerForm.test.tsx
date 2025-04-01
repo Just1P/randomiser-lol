@@ -4,7 +4,6 @@ import '@testing-library/jest-dom';
 import PlayerForm from '@/components/PlayerForm';
 import { Player } from '@/types/player';
 
-// Mock de next/image
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: { src: string; alt: string; fill?: boolean; priority?: boolean }) => {
@@ -13,7 +12,6 @@ jest.mock('next/image', () => ({
   },
 }));
 
-// Mock de window.alert
 const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
 describe('PlayerForm', () => {
@@ -42,14 +40,11 @@ describe('PlayerForm', () => {
     const plusButton = screen.getByRole('button', { name: '3' });
     const minusButton = screen.getByRole('button', { name: '1' });
     
-    // Vérifie le nombre initial de joueurs (5)
     expect(screen.getAllByRole('textbox')).toHaveLength(5);
     
-    // Change à 3 joueurs
     fireEvent.click(plusButton);
     expect(screen.getAllByRole('textbox')).toHaveLength(3);
     
-    // Change à 1 joueur
     fireEvent.click(minusButton);
     expect(screen.getAllByRole('textbox')).toHaveLength(1);
   });
@@ -67,7 +62,6 @@ describe('PlayerForm', () => {
   it('shows validation error when submitting with duplicate names', () => {
     render(<PlayerForm {...defaultProps} />);
     
-    // Change à 2 joueurs
     fireEvent.click(screen.getByRole('button', { name: '2' }));
     
     const inputs = screen.getAllByRole('textbox');
@@ -84,7 +78,6 @@ describe('PlayerForm', () => {
   it('submits form with valid player names', () => {
     render(<PlayerForm {...defaultProps} />);
     
-    // Change à 2 joueurs
     fireEvent.click(screen.getByRole('button', { name: '2' }));
     
     const inputs = screen.getAllByRole('textbox');

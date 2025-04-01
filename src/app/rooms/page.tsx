@@ -165,6 +165,7 @@ export default function RoomsPage() {
                     <Label htmlFor="ownerName" className="text-zinc-300">Votre nom</Label>
                     <Input
                       id="ownerName"
+                      data-testid="owner-name-input"
                       placeholder="Entrez votre nom"
                       value={ownerName}
                       onChange={(e) => setOwnerName(e.target.value)}
@@ -179,6 +180,7 @@ export default function RoomsPage() {
                         <button
                           key={count}
                           type="button"
+                          data-testid={`room-player-count-${count}`}
                           className={`px-3 py-1.5 min-w-10 text-sm ${
                             playerCount === count 
                               ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium" 
@@ -193,6 +195,7 @@ export default function RoomsPage() {
                   </div>
                   
                   <Button 
+                    data-testid="create-room-button"
                     className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none shadow-lg hover:shadow-xl transition-all duration-200" 
                     disabled={loading}
                     onClick={handleCreateRoom}
@@ -216,6 +219,7 @@ export default function RoomsPage() {
                     <Label htmlFor="roomCode" className="text-zinc-300">Code de la Room</Label>
                     <Input
                       id="roomCode"
+                      data-testid="room-code-input"
                       placeholder="Entrez le code (ex: ABC123)"
                       value={roomCode}
                       onChange={(e) => setRoomCode(e.target.value)}
@@ -223,6 +227,7 @@ export default function RoomsPage() {
                     />
                   </div>
                   <Button 
+                    data-testid="join-room-button"
                     className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-none shadow-lg hover:shadow-xl transition-all duration-200" 
                     disabled={loading}
                     onClick={handleJoinRoom}

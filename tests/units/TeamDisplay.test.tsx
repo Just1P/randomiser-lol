@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import TeamDisplay from '../components/TeamDisplay';
+import '@testing-library/jest-dom';
+import TeamDisplay from '../../src/components/TeamDisplay';
 import { Role } from '@/enums/role';
 import { Player } from '@/types/player';
 

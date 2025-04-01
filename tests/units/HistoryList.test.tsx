@@ -5,7 +5,6 @@ import HistoryList from '@/components/HistoryList';
 import { useHistoryStore } from '@/stores/historyStore';
 import { Role } from '@/enums/role';
 
-// Mock du store Zustand
 jest.mock('@/stores/historyStore');
 
 const mockUseHistoryStore = useHistoryStore as jest.MockedFunction<typeof useHistoryStore>;
@@ -50,7 +49,6 @@ describe('HistoryList', () => {
   it('renders history entries correctly', () => {
     render(<HistoryList onSelectTeam={mockOnSelectTeam} />);
 
-    // Vérifie que les joueurs sont affichés
     expect(screen.getByText('2 joueurs')).toBeInTheDocument();
     expect(screen.getByText('31/03/2024')).toBeInTheDocument();
   });
@@ -58,11 +56,9 @@ describe('HistoryList', () => {
   it('expands entry details on click', () => {
     render(<HistoryList onSelectTeam={mockOnSelectTeam} />);
 
-    // Clique pour développer l'entrée
     const entryElement = screen.getByText('31/03/2024').closest('.cursor-pointer');
     fireEvent.click(entryElement!);
-    
-    // Vérifie que les détails sont affichés
+
     expect(screen.getByText('Player1')).toBeInTheDocument();
     expect(screen.getByText('Player2')).toBeInTheDocument();
     expect(screen.getByText('Aatrox')).toBeInTheDocument();
@@ -103,11 +99,9 @@ describe('HistoryList', () => {
   it('renders Lolalytics links for champions', () => {
     render(<HistoryList onSelectTeam={mockOnSelectTeam} />);
     
-    // Développe l'entrée
     const entryElement = screen.getByText('31/03/2024').closest('.cursor-pointer');
     fireEvent.click(entryElement!);
     
-    // Vérifie les liens Lolalytics
     const lolalyticsLinks = screen.getAllByRole('link', { name: /Guide Lolalytics/i });
     expect(lolalyticsLinks).toHaveLength(2);
     expect(lolalyticsLinks[0]).toHaveAttribute('href', 'https://lolalytics.com/lol/aatrox/build/');

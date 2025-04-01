@@ -62,6 +62,8 @@ export default function PlayerForm({
     return Array(playerCount).fill(null).map(() => ({ id: uuidv4(), name: "" }));
   });
 
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   useEffect(() => {
     setDisplayedPlayers(allPlayersRef.current.slice(0, playerCount));
     
@@ -84,15 +86,16 @@ export default function PlayerForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     
     if (displayedPlayers.some(player => !player.name.trim())) {
-      alert("Veuillez entrer tous les noms des joueurs");
+      setErrorMessage("Veuillez entrer tous les noms des joueurs");
       return;
     }
     
     const uniqueNames = new Set(displayedPlayers.map(player => player.name.trim()));
     if (uniqueNames.size !== displayedPlayers.length) {
-      alert("Tous les noms des joueurs doivent être uniques");
+      setErrorMessage("Tous les noms des joueurs doivent être uniques");
       return;
     }
     
@@ -117,6 +120,11 @@ export default function PlayerForm({
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
+        {errorMessage && (
+          <div data-testid="error-message" className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-md text-red-500 text-sm">
+            {errorMessage}
+          </div>
+        )}
         <div className="mb-6 flex items-center justify-center">
           <div className="flex items-center space-x-4">
             <span className="text-sm font-medium">Nombre de joueurs:</span>
@@ -125,6 +133,7 @@ export default function PlayerForm({
                 <button
                   key={count}
                   type="button"
+                  data-testid={`player-count-${count}`}
                   className={`px-3 py-1.5 min-w-10 text-sm ${
                     playerCount === count 
                       ? "bg-blue-500 text-white font-medium" 
@@ -151,6 +160,7 @@ export default function PlayerForm({
                 </label>
                 <Input
                   id={`player-${index}`}
+                  data-testid={`player-input-${index + 1}`}
                   value={player.name}
                   onChange={(e) => handlePlayerNameChange(index, e.target.value)}
                   placeholder={`Nom du joueur ${index + 1}`}
@@ -164,6 +174,7 @@ export default function PlayerForm({
           <div className="flex items-center space-x-2 pt-2">
             <Switch 
               id="champions-mode"
+              data-testid="champions-mode-switch"
               checked={includeChampions}
               onCheckedChange={onToggleChampions}
             />
@@ -173,6 +184,7 @@ export default function PlayerForm({
           <div className="flex justify-center mt-6">
             <Button 
               type="submit" 
+              data-testid="generate-team-button"
               className="bg-[#3b82f6] text-white hover:bg-[#2563eb] transition-all font-medium"
               disabled={isLoading}
             >
