@@ -14,4 +14,7 @@ module.exports = {
       ],
     },
   },
+  // Supprimer les avertissements pour les fichiers volumineux
+  compact: false,
+  comments: false,
 }; 

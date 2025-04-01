@@ -1,7 +1,7 @@
-import { chromium, FullConfig } from '@playwright/test';
+import { chromium } from '@playwright/test';
 
 // Cette fonction est exécutée une fois avant tous les tests
-async function globalSetup(_config: FullConfig) {
+async function globalSetup() {
   // Vous pouvez configurer un contexte de navigateur persistant ici
   const browser = await chromium.launch();
   const context = await browser.newContext();
