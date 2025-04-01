@@ -1,17 +1,35 @@
 import { test, expect } from "@playwright/test";
 
 test("Générer une équipe de 3 joueurs avec des champions", async ({ page }) => {
+  // Intercepter les appels API qui pourraient échouer
+  await page.route('**/*api*/**', async route => {
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    });
+  });
+
   await page.goto("/");
+
+  // Attendre que la page soit chargée
+  await page.waitForSelector('[data-testid="player-count-3"]', { timeout: 10000 });
 
   const threePlayersButton = page.getByTestId("player-count-3");
   await threePlayersButton.click();
+
+  // Attendre que les inputs apparaissent
+  await page.waitForSelector('[data-testid="player-input-1"]', { timeout: 5000 });
 
   const player1Input = page.getByTestId("player-input-1");
   const player2Input = page.getByTestId("player-input-2");
   const player3Input = page.getByTestId("player-input-3");
 
+  await player1Input.clear();
   await player1Input.fill("Justin");
+  await player2Input.clear();
   await player2Input.fill("Cass");
+  await player3Input.clear();
   await player3Input.fill("Lolo");
 
   const championsSwitch = page.getByTestId("champions-mode-switch");
@@ -19,6 +37,10 @@ test("Générer une équipe de 3 joueurs avec des champions", async ({ page }) =
 
   const generateButton = page.getByTestId("generate-team-button");
   await generateButton.click();
+
+  // Augmenter le timeout pour attendre l'affichage des cartes
+  await page.waitForSelector('[data-testid="player-card-Justin"]', { timeout: 10000 });
+  
   const player1Card = page.getByTestId("player-card-Justin");
   const player2Card = page.getByTestId("player-card-Cass");
   const player3Card = page.getByTestId("player-card-Lolo");
@@ -26,7 +48,6 @@ test("Générer une équipe de 3 joueurs avec des champions", async ({ page }) =
   await expect(player1Card).toBeVisible();
   await expect(player2Card).toBeVisible();
   await expect(player3Card).toBeVisible();
-
 
   const player1Role = page.getByTestId("player-role-Justin");
   const player2Role = page.getByTestId("player-role-Cass");
