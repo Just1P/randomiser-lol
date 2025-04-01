@@ -70,8 +70,8 @@ export default defineConfig({
     command: "npm run dev:test",
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    stdout: process.env.CI ? 'pipe' : 'ignore',
-    stderr: process.env.CI ? 'pipe' : 'ignore',
+    stdout: 'pipe',
+    stderr: 'pipe',
     env: {
       // Variables d'environnement pour le serveur
       NEXT_PUBLIC_FIREBASE_API_KEY: 'mock-api-key',
