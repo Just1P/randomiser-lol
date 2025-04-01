@@ -4,11 +4,12 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:test": "BABEL_ENV=test NODE_ENV=test next dev --no-open",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:unit": "jest",
-    "test:e2e": "npx playwright test"
+    "test:unit": "NODE_ENV=test jest --silent",
+    "test:e2e": "NODE_ENV=test BABEL_ENV=test npx playwright test --quiet"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",

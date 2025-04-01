@@ -67,9 +67,11 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run dev",
+    command: "npm run dev:test",
     port: 3000,
     reuseExistingServer: !process.env.CI,
+    stdout: process.env.CI ? 'pipe' : 'ignore',
+    stderr: process.env.CI ? 'pipe' : 'ignore',
     env: {
       // Variables d'environnement pour le serveur
       NEXT_PUBLIC_FIREBASE_API_KEY: 'mock-api-key',
@@ -78,6 +80,9 @@ export default defineConfig({
       FIREBASE_CLIENT_EMAIL: 'mock-client-email',
       FIREBASE_PRIVATE_KEY: 'mock-private-key',
       NODE_ENV: 'test',
+      BABEL_ENV: 'test',
+      BABEL_DISABLE_WARNINGS: 'true',
+      BABEL_QUIET: 'true',
     },
   },
 });
