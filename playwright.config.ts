@@ -67,22 +67,11 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: "npm run dev:test",
+    // Utiliser un serveur HTTP simple qui ne dépend pas de Babel
+    command: "npx http-server ./.next -p 3000 -s --cors -a localhost",
     port: 3000,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',
-    env: {
-      // Variables d'environnement pour le serveur
-      NEXT_PUBLIC_FIREBASE_API_KEY: 'mock-api-key',
-      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: 'mock-auth-domain',
-      NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'mock-project-id',
-      FIREBASE_CLIENT_EMAIL: 'mock-client-email',
-      FIREBASE_PRIVATE_KEY: 'mock-private-key',
-      NODE_ENV: 'test',
-      BABEL_ENV: 'test',
-      BABEL_DISABLE_WARNINGS: 'true',
-      BABEL_QUIET: 'true',
-    },
   },
 });
