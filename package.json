@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test:unit": "NODE_ENV=test jest --silent --testPathIgnorePatterns=babel.config.test.js",
+    "test:unit": "NODE_ENV=test jest --silent --testPathIgnorePatterns=\"babel.config.test.js|tests/e2e/\"",
     "test:e2e": "NODE_ENV=test BABEL_ENV=test BABEL_CONFIG_FILE=babel.config.test.js npx playwright test --quiet"
   },
   "dependencies": {
