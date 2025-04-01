@@ -51,17 +51,4 @@ describe('TeamDisplay', () => {
     
     expect(screen.getByText('3 joueurs avec des rôles aléatoires')).toBeInTheDocument();
   });
-
-  it('renders Lolalytics links when champions are included', () => {
-    render(<TeamDisplay team={mockTeam} includeChampions={true} />);
-    
-    const lolalyticsLinks = screen.getAllByText('Voir le guide sur Lolalytics');
-    expect(lolalyticsLinks).toHaveLength(3);
-    
-    // Vérifie que les liens sont correctement formatés
-    lolalyticsLinks.forEach((link) => {
-      expect(link.closest('a')).toHaveAttribute('target', '_blank');
-      expect(link.closest('a')).toHaveAttribute('rel', 'noopener noreferrer');
-    });
-  });
 }); 

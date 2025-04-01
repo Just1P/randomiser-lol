@@ -3,16 +3,15 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PlayerForm from '@/components/PlayerForm';
 import { Player } from '@/types/player';
+import Image from 'next/image';
 
 jest.mock('next/image', () => ({
   __esModule: true,
   default: (props: { src: string; alt: string; fill?: boolean; priority?: boolean }) => {
     const { src, alt, ...rest } = props;
-    return <img src={src} alt={alt || ''} {...rest} />;
+    return <Image src={src} alt={alt || ''} {...rest} />;
   },
 }));
-
-const mockAlert = jest.spyOn(window, 'alert').mockImplementation(() => {});
 
 describe('PlayerForm', () => {
   const mockOnSubmit = jest.fn();
@@ -31,7 +30,6 @@ describe('PlayerForm', () => {
     mockOnSubmit.mockClear();
     mockSetPlayers.mockClear();
     mockOnToggleChampions.mockClear();
-    mockAlert.mockClear();
   });
 
   it('updates player count when clicking plus/minus buttons', () => {
@@ -55,7 +53,8 @@ describe('PlayerForm', () => {
     const submitButton = screen.getByRole('button', { name: "Générer l'équipe" });
     fireEvent.click(submitButton);
     
-    expect(mockAlert).toHaveBeenCalledWith('Veuillez entrer tous les noms des joueurs');
+    const errorMessage = screen.getByTestId('error-message');
+    expect(errorMessage).toHaveTextContent('Veuillez entrer tous les noms des joueurs');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
@@ -71,7 +70,8 @@ describe('PlayerForm', () => {
     const submitButton = screen.getByRole('button', { name: "Générer l'équipe" });
     fireEvent.click(submitButton);
     
-    expect(mockAlert).toHaveBeenCalledWith('Tous les noms des joueurs doivent être uniques');
+    const errorMessage = screen.getByTestId('error-message');
+    expect(errorMessage).toHaveTextContent('Tous les noms des joueurs doivent être uniques');
     expect(mockOnSubmit).not.toHaveBeenCalled();
   });
 
