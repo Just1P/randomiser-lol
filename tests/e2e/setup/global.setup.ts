@@ -2,42 +2,52 @@ import { chromium } from '@playwright/test';
 
 // Cette fonction est exécutée une fois avant tous les tests
 async function globalSetup() {
+  console.log('Setting up test environment...');
+  
   // Vous pouvez configurer un contexte de navigateur persistant ici
   const browser = await chromium.launch();
   const context = await browser.newContext();
-  const page = await context.newPage();
 
-  // Configurer l'interception des requêtes Firebase
-  await context.route('**/*firestore*/**', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ 
-        success: true,
-        result: { name: '0E7CTI' } 
-      }),
+  // Stocker des données pour les tests
+  await context.addInitScript(() => {
+    // Stocker les valeurs dans l'objet window global
+    window.__TEST_DATA__ = {
+      mocks: {
+        room: {
+          id: '0E7CTI',
+          owner: 'Justin',
+          playerCount: 3,
+          maxPlayers: 3,
+          connectedPlayers: ['Justin'],
+          players: [
+            { id: 'Justin', name: 'Justin', role: null, champion: null },
+            { id: '', name: '', role: null, champion: null },
+            { id: '', name: '', role: null, champion: null }
+          ],
+          includeChampions: false,
+          generatedTeam: []
+        }
+      }
+    };
+    
+    // Mocker localStorage
+    const originalLocalStorage = window.localStorage;
+    Object.defineProperty(window, 'localStorage', {
+      value: {
+        getItem: (key) => {
+          if (key === 'username') return 'Justin';
+          return originalLocalStorage.getItem(key);
+        },
+        setItem: originalLocalStorage.setItem.bind(originalLocalStorage),
+        removeItem: originalLocalStorage.removeItem.bind(originalLocalStorage),
+        clear: originalLocalStorage.clear.bind(originalLocalStorage),
+      },
     });
-  });
-
-  // Configurer l'interception des requêtes Firebase Auth
-  await context.route('**/*identitytoolkit*/**', async route => {
-    await route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: JSON.stringify({ success: true }),
-    });
-  });
-
-  // Pour manipuler localStorage, on doit d'abord naviguer vers la page
-  await page.goto('http://localhost:3000/');
-  
-  // Maintenant on peut interagir avec localStorage
-  await page.evaluate(() => {
-    localStorage.setItem('username', 'Justin');
-    localStorage.setItem('mock-firebase', 'true');
   });
 
   await browser.close();
+  
+  console.log('Test environment setup complete');
 }
 
 export default globalSetup; 

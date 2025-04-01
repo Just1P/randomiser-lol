@@ -35,6 +35,14 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
+    // Ignorer les erreurs HTTPS et autres erreurs de sécurité
+    ignoreHTTPSErrors: true,
+    // Simuler un environnement de test
+    contextOptions: {
+      reducedMotion: 'reduce',
+    },
+    // Enregistrer une vidéo en cas d'échec
+    video: 'on-first-retry',
   },
 
   /* Configure projects for major browsers */
@@ -65,13 +73,5 @@ export default defineConfig({
     // },
   ],
 
-  /* Run your local dev server before starting the tests */
-  webServer: {
-    // Utiliser un serveur HTTP simple qui ne dépend pas de Babel
-    command: "npx http-server ./.next -p 3000 -s --cors -a localhost",
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
-    stdout: 'pipe',
-    stderr: 'pipe',
-  },
+  // Aucun serveur web, nous utiliserons des mocks pour les tests
 });

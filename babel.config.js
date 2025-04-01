@@ -22,11 +22,6 @@ module.exports = {
       minified: true,
       comments: false,
       maxSize: 5000000, // 5MB, bien au-dessus de la taille des fichiers Firebase
-    },
-    // Désactiver les warnings pour Firebase en mode test
-    ignore: [
-      /node_modules\/@firebase\/firestore/,
-      /node_modules\/firebase/,
-    ],
+    }
   } : {})
 }; 
