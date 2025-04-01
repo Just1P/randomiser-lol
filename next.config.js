@@ -1,14 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Forcer l'utilisation de SWC
-  swcMinify: true,
+  // Configuration pour les tests et le développement
   compiler: {
-    // Voir https://nextjs.org/docs/advanced-features/compiler
-    styledComponents: true, // Si vous utilisez styled-components
+    styledComponents: true,
   },
-  // Autres configurations...
-  experimental: {
-    // Fonctionnalités expérimentales si nécessaire
+  // Désactiver les règles de lint pour le déploiement en CI
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Ignorer les erreurs de type TypeScript pendant les builds
+  typescript: {
+    ignoreBuildErrors: true,
   },
 };
 

@@ -24,6 +24,11 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
+  timeout: 30000,
+
+  // Setup global pour mocker Firebase et préparer les tests
+  globalSetup: require.resolve('./tests/e2e/setup/global.setup.ts'),
+
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: "http://localhost:3000/",
@@ -63,7 +68,16 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: "npm run dev",
-    url: "http://localhost:3000/",
+    port: 3000,
     reuseExistingServer: !process.env.CI,
+    env: {
+      // Variables d'environnement pour le serveur
+      NEXT_PUBLIC_FIREBASE_API_KEY: 'mock-api-key',
+      NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: 'mock-auth-domain',
+      NEXT_PUBLIC_FIREBASE_PROJECT_ID: 'mock-project-id',
+      FIREBASE_CLIENT_EMAIL: 'mock-client-email',
+      FIREBASE_PRIVATE_KEY: 'mock-private-key',
+      NODE_ENV: 'test',
+    },
   },
 });
