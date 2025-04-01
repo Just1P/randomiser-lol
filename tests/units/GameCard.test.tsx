@@ -7,7 +7,7 @@ describe('GameCard', () => {
   const mockProps = {
     champion: 'Ahri',
     role: 'Mid',
-    result: 'win' as const,
+    result: 'win',
     date: '2024-03-31',
   };
 
@@ -28,7 +28,7 @@ describe('GameCard', () => {
   });
 
   it('applies correct styling for loss result', () => {
-    const lossProps = { ...mockProps, result: 'loss' as const };
+    const lossProps = { ...mockProps, result: 'loss' };
     render(<GameCard {...lossProps} />);
     const resultElement = screen.getByText('LOSS');
     expect(resultElement).toHaveClass('text-red-600');

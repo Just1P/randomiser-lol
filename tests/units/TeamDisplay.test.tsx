@@ -6,7 +6,7 @@ import { Role } from '@/enums/role';
 import { Player } from '@/types/player';
 
 describe('TeamDisplay', () => {
-  const mockTeam: Player[] = [
+  const mockTeam = [
     { id: '1', name: 'Player1', role: Role.TOP, champion: 'Darius' },
     { id: '2', name: 'Player2', role: Role.JUNGLE, champion: 'LeeSin' },
     { id: '3', name: 'Player3', role: Role.MID, champion: 'Ahri' },

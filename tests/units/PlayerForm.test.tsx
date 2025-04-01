@@ -7,7 +7,7 @@ import Image from 'next/image';
 
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: (props: { src: string; alt: string; fill?: boolean; priority?: boolean }) => {
+  default: function MockImage(props) {
     const { src, alt, ...rest } = props;
     return <Image src={src} alt={alt || ''} {...rest} />;
   },

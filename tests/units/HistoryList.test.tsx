@@ -5,8 +5,12 @@ import HistoryList from '@/components/HistoryList';
 import { useHistoryStore } from '@/stores/historyStore';
 import { Role } from '@/enums/role';
 
-jest.mock('@/stores/historyStore');
+// Properly mock the useHistoryStore module
+jest.mock('@/stores/historyStore', () => ({
+  useHistoryStore: jest.fn()
+}));
 
+// Get the mocked function
 const mockUseHistoryStore = useHistoryStore as jest.MockedFunction<typeof useHistoryStore>;
 
 describe('HistoryList', () => {
