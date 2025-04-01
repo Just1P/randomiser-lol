@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest"
+    "test:unit": "jest",
+    "test:e2e": "npx playwright test"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.3",
