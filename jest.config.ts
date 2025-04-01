@@ -173,7 +173,8 @@ const config: Config = {
   testPathIgnorePatterns: [
     "/node_modules/", 
     "/.next/",
-    "/tests/e2e/"
+    "/tests/e2e/",
+    "babel.config.test.js",
   ],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files

@@ -1,6 +1,29 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom';
 
+// Supprimer les sorties de console pendant les tests
+const originalConsoleWarn = console.warn;
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
+
+// Ne conserver que les erreurs importantes
+beforeAll(() => {
+  console.warn = jest.fn();
+  console.error = jest.fn((message) => {
+    if (message && message.includes('critical error')) {
+      originalConsoleError(message);
+    }
+  });
+  console.log = jest.fn();
+});
+
+// Restaurer console après les tests
+afterAll(() => {
+  console.warn = originalConsoleWarn;
+  console.error = originalConsoleError;
+  console.log = originalConsoleLog;
+});
+
 // Mock global objects that might be needed
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
