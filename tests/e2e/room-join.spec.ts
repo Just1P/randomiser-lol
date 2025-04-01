@@ -1,6 +1,11 @@
 import { test, expect } from "@playwright/test";
 
 test("Rejoindre une room existante", async ({ page }) => {
+  // Initialiser localStorage avant tout
+  await page.addInitScript(() => {
+    localStorage.setItem('username', 'Justin');
+  });
+
   // Mock des routes
   await page.route('**', route => {
     const url = route.request().url();
@@ -28,29 +33,12 @@ test("Rejoindre une room existante", async ({ page }) => {
     </div>
   `);
 
-  // Simuler localStorage
-  await page.evaluate(() => {
-    localStorage.setItem('username', 'Justin');
-  });
-
   // Rejoindre la room avec le code fixe
   const roomCodeInput = page.getByTestId("room-code-input");
   await roomCodeInput.fill("0E7CTI");
 
   const joinRoomButton = page.getByTestId("join-room-button");
   await joinRoomButton.click();
-
-  // Simuler la redirection
-  await page.evaluate(() => {
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: {
-        ...window.location,
-        href: 'http://localhost:3000/rooms/0E7CTI',
-        pathname: '/rooms/0E7CTI'
-      }
-    });
-  });
 
   // Simuler la page de room
   await page.setContent(`

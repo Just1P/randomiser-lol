@@ -9,7 +9,8 @@ import { defineConfig, devices } from "@playwright/test";
 // dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 /**
- * See https://playwright.dev/docs/test-configuration.
+ * Configuration complète du test
+ * @see https://playwright.dev/docs/test-configuration
  */
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -24,14 +25,21 @@ export default defineConfig({
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
-  timeout: 30000,
+  timeout: 30 * 1000,
+
+  expect: {
+    /**
+     * Maximum time expect() should wait for the condition to be met.
+     */
+    timeout: 5000
+  },
 
   // Setup global pour mocker Firebase et préparer les tests
-  globalSetup: require.resolve('./tests/e2e/setup/global.setup.ts'),
+  globalSetup: './tests/e2e/setup/global.setup.ts',
 
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://localhost:3000/",
+    baseURL: "http://localhost:3000",
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -43,13 +51,21 @@ export default defineConfig({
     },
     // Enregistrer une vidéo en cas d'échec
     video: 'on-first-retry',
+    /* Capture screenshot on failure */
+    screenshot: 'only-on-failure',
   },
 
-  /* Configure projects for major browsers */
+  /* Configure projects for different browsers */
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { 
+        ...devices["Desktop Chrome"],
+        /* Disable JavaScript JIT to make tests more stable */
+        launchOptions: {
+          args: ['--js-flags=--no-jit']
+        }
+      },
     },
 
     /* Test against mobile viewports. */
